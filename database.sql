@@ -156,9 +156,9 @@ FULL OUTER JOIN Products p ON oi.product_id = p.product_id;
 
 SELECT DISTINCT c.full_name
 FROM Customers c
-INNER JOIN Orders o ON c.customer_id = o.customer_id
-INNER JOIN Order_Items oi ON o.order_id = oi.order_id
-INNER JOIN Products p ON oi.product_id = p.product_id
+JOIN Orders o ON c.customer_id = o.customer_id
+JOIN Order_Items oi ON o.order_id = oi.order_id
+JOIN Products p ON oi.product_id = p.product_id
 WHERE p.price = (SELECT MAX(price) FROM Products);
 
 SELECT 
@@ -172,4 +172,4 @@ SELECT
     c1.full_name AS new_customer, 
     c2.full_name AS recommended_by
 FROM Customers c1
-INNER JOIN Customers c2 ON c1.recommended_by = c2.customer_id;
+JOIN Customers c2 ON c1.recommended_by = c2.customer_id;
