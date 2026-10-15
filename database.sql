@@ -1,11 +1,3 @@
-DROP TABLE IF EXISTS Order_Items;
-DROP TABLE IF EXISTS Orders;
-DROP TABLE IF EXISTS Products;
-DROP TABLE IF EXISTS Customers;
-
-
-
-
 -- Создание таблицы Покупателей
 CREATE TABLE Customers (
     customer_id SERIAL PRIMARY KEY,
@@ -80,84 +72,85 @@ SELECT
     c.full_name,
     o.order_date
 FROM Customers c
-JOIN Orders o ON c.id = o.customer_id;
+JOIN Orders o ON c.customer_id = o.customer_id;
 
 SELECT 
     c.full_name
 FROM Customers c
-LEFT JOIN Orders o ON c.id = o.customer_id
-WHERE o.id IS NULL;
+LEFT JOIN Orders o ON c.customer_id = o.customer_id
+WHERE o.order_id IS NULL;
 
 SELECT 
     p.product_name, 
     oi.quantity, 
     oi.price_per_unit
 FROM Order_Items oi
-JOIN Products p ON oi.product_id = p.id
+JOIN Products p ON oi.product_id = p.product_id
 WHERE oi.order_id = 1;
+
 
 SELECT c.full_name 
 FROM Customers c
-WHERE c.id IN (
-    SELECT DISTINCT o.customer_id 
+WHERE c.customer_id IN (
+    SELECT o.customer_id 
     FROM Orders o
-    JOIN Order_Items oi ON o.id = oi.order_id
-    JOIN Products p ON oi.product_id = p.id
+    JOIN Order_Items oi ON o.order_id = oi.order_id
+    JOIN Products p ON oi.product_id = p.product_id
     WHERE p.product_name = 'Смартфон'
 );
 
-SELECT p.id, p.product_name, p.category, p.price 
+SELECT
+    p.product_name,
+    p.price 
 FROM Products p
 WHERE p.price > (SELECT AVG(price) FROM Products);
 
-SELECT o.id, o.order_date 
+
+SELECT o.order_id, o.order_date 
 FROM Orders o
 WHERE EXISTS (
     SELECT 1 
     FROM Order_Items oi
-    WHERE oi.order_id = o.id AND oi.price_per_unit > 100000
+    WHERE oi.order_id = o.order_id AND oi.price_per_unit > 100000
 );
 
-SELECT c.full_name 
+
+SELECT DISTINCT
+     c.full_name 
 FROM Customers c
-LEFT JOIN Orders o ON c.id = o.customer_id
-LEFT JOIN Order_Items oi ON o.id = oi.order_id
-LEFT JOIN Products p ON oi.product_id = p.id AND p.product_name = 'Ноутбук'
-WHERE o.id IS NULL OR p.id IS NULL;
+LEFT JOIN Orders o ON c.customer_id = o.customer_id
+LEFT JOIN Order_Items oi ON o.order_id = oi.order_id
+LEFT JOIN Products p ON oi.product_id = p.product_id AND p.product_name = 'Ноутбук'
+WHERE p.product_id IS NULL;
 
-);
 
-SELECT p.product_name
-FROM Order_Items oi
-RIGHT JOIN Products p ON oi.product_id = p.id
-WHERE oi.id IS NULL;
+SELECT
+     p.product_name
+FROM Products p
+LEFT JOIN Order_Items oi ON p.product_id = oi.product_id
+WHERE oi.order_id IS NULL;
+
 
 SELECT 
     c.full_name, 
     p.product_name, 
     oi.quantity
 FROM Customers c
-FULL OUTER JOIN Orders o ON c.id = o.customer_id
-FULL OUTER JOIN Order_Items oi ON o.id = oi.order_id
-FULL OUTER JOIN Products p ON oi.product_id = p.id;
+FULL OUTER JOIN Orders o ON c.customer_id = o.customer_id
+FULL OUTER JOIN Order_Items oi ON o.order_id = oi.order_id
+FULL OUTER JOIN Products p ON oi.product_id = p.product_id;
 
-SELECT c.full_name
+
+SELECT DISTINCT
+     c.full_name
 FROM Customers c
-JOIN Orders o ON c.id = o.customer_id
-JOIN Order_Items oi ON o.id = oi.order_id
-JOIN Products p ON oi.product_id = p.id
+JOIN Orders o ON c.customer_id = o.customer_id
+JOIN Order_Items oi ON o.order_id = oi.order_id
+JOIN Products p ON oi.product_id = p.product_id
 WHERE p.price = (SELECT MAX(price) FROM Products);
-
 
 SELECT 
     c.full_name, 
     p.category
 FROM Customers c
-CROSS JOIN Products p;
-
-
-SELECT 
-    c1.full_name AS new_customer, 
-    c2.full_name AS recommended_by
-FROM Customers c1
-JOIN Customers c2 ON c1.recommended_by = c2.id;
+CROSS JOIN (SELECT DISTINCT category FROM Products) p;
