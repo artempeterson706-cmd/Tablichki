@@ -89,7 +89,8 @@ JOIN Products p ON oi.product_id = p.product_id
 WHERE oi.order_id = 1;
 
 
-SELECT c.full_name 
+SELECT
+    c.full_name 
 FROM Customers c
 WHERE c.customer_id IN (
     SELECT o.customer_id 
@@ -106,7 +107,9 @@ FROM Products p
 WHERE p.price > (SELECT AVG(price) FROM Products);
 
 
-SELECT o.order_id, o.order_date 
+SELECT
+    o.order_id,
+    o.order_date 
 FROM Orders o
 WHERE EXISTS (
     SELECT 1 
