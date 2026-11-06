@@ -113,14 +113,6 @@ LEFT JOIN Orders o ON c.customer_id = o.customer_id
 GROUP BY c.full_name
 HAVING COUNT(order_id)>1;
 
-SELECT
-    product_name,
-    COUNT(quantity) as product_count,
-    MAX(quantity) as max_quantity
-FROM order_items oi
-JOIN products p ON p.product_id = oi.product_id
-GROUP BY product_name
-HAVING COUNT(quantity)>MAX(quantity);
 
 
 SELECT 
